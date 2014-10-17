@@ -1,4 +1,4 @@
 phone_location_tracker
 ======================
 
-Track your location over time
+The goal of this project was to be able to track your location over time, with the intent of eventually reporting it to a server, all from a website instead of a native app. However, this does not seem to be possible at the moment. I was able to get Safari background tabs to execute code, even when Safari is not being used or when the phone is locked, but the calls to the geolocation API did not work in this instance. AJAX requests also did not work, although it's not terribly surprising if geolocation didn't work. The code is a mess because there's no reason to fix up a broken project. But if you'd like to give it a try, "main.js" is the main Node.js file, just run it, then go to your server on an iOS device (tested on iphone 5S and iOS 7.1) and enter the secret that matches the one in "location_routes.js". Then make a new tab to put the current one in the background, and observe how the title increments every 3 seconds. However since the other services don't work it doesn't do much else.
