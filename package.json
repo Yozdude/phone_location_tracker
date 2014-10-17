@@ -1,0 +1,25 @@
+{
+  "name": "nodejs_base",
+  "version": "1.0.0",
+  "description": "Base project for nodejs",
+  "main": "main.js",
+  "dependencies": {
+    "handlebars": "^2.0.0",
+    "hapi": "^7.0.0",
+    "mongoose": "^3.8.17",
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yozdude/nodejs_base.git"
+  },
+  "author": "Jack Sivak",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yozdude/nodejs_base/issues"
+  },
+  "homepage": "https://github.com/Yozdude/nodejs_base"
+}

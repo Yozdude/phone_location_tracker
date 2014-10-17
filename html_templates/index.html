@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>4</title>
+		<meta http-equiv="refresh" content="5" id="metarefresh">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+		<style>
+			p { font-size: 18px; }
+			input[type='text'] { font-size: 16px; }
+		</style>
+		<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+<script>
+// iPad/iPhone background tab notification trick
+var mr = document.getElementById("metarefresh");
+setInterval(function() {
+	mr.content=mr.content; // Shift the reload operation
+}, parseInt(mr.content)/2); 
+</script>
+
+<script>
+var count = sessionStorage.getItem("count")||0;
+document.title = count;
+count++
+sessionStorage.setItem("count", count);
+console.log(count);
+
+var key =  sessionStorage.getItem("key")
+if (!key) {
+	$("#lastResult").text("Key Error - no key has been entered");
+} else {
+	$("#keyInput").val(key);
+	console.log("key is: ", key);
+
+	var locations = sessionStorage.getItem("locations");
+	if (!locations) {
+		locations = [];
+	}
+	console.log("locations are: ", locations);
+	
+	navigator.geolocation.getCurrentPosition(GetLocation, function(err) {
+		console.log("geo location error: ", err);
+	}, { timeout: 2000 });
+	
+	function GetLocation(location) {
+		console.log("Got location: ", location);
+		locations.push({
+	    	key: key,
+			latitude: location.coords.latitude,
+			longitude: location.coords.longitude,
+			accuracy: location.coords.accuracy
+		});
+		sessionStorage.setItem("locations", locations);
+		
+		var now = new Date();
+		var next = new Date(Date.now() + 5*60000)
+	    $("#lastSent").text(now.getHours() + ":" + now.getMinutes());
+	    $("#nextSend").text(next.getHours() + ":" + next.getMinutes());
+	    
+	    var len = locations.length;
+	    console.log("Len is " + len);
+		while (len--) {
+			var loc = locations.splice(len);
+			$.post('/location', {
+		    	key: loc.key,
+				latitude: loc.latitude,
+				longitude: loc.longitude,
+				accuracy: loc.accuracy
+			}, function(returnedData) {
+			    $("#lastResult").text(returnedData.status + (returnedData.description ? " - " + returnedData.description : ""));
+			    sessionStorage.setItem("locations", locations);
+			});		
+		}
+	}
+}
+
+/*
+			var months = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+			
+			var key =  sessionStorage.getItem("key")
+			if (key) {
+				$("#keyInput").val(key);
+				navigator.geolocation.getCurrentPosition(GetLocation);
+			} else {
+				$("#lastResult").text("Key Error - no key has been entered");
+			}
+			
+			function GetLocation(location) {
+				var now = new Date();
+				var next = new Date(Date.now() + 5*60000)
+			    $("#lastSent").text(months[now.getMonth()] + " " + now.getDay() + ", " + now.getHours() + ":" + now.getMinutes());
+			    $("#nextSend").text(months[next.getMonth()] + " " + next.getDay() + ", " + next.getHours() + ":" + next.getMinutes());
+			    $.post('/location', {
+			    	key: key,
+		    		latitude: location.coords.latitude,
+					longitude: location.coords.longitude,
+					accuracy: location.coords.accuracy
+				}, function(returnedData) {
+				    $("#lastResult").text(returnedData.status + (returnedData.description ? " - " + returnedData.description : ""));
+				});
+			}
+*/
+			
+			function setKey() {
+				sessionStorage.setItem("key", $("#keyInput").val());
+				location.reload();
+			}
+</script>
+
+</head>
+	<body>
+		<div style="padding-left: 15px; padding-right: 15px;">
+			<div class="span9"><h1>Phone Location Tracker</h1></div>
+			<div class="span9"><p>Periodically sends your coordinates to the server for storage.</p></div>
+			<div class="span9" style="max-width: 300px;"><p>
+				<div class="input-group">
+					<input type="text" class="form-control" id="keyInput">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button" onclick="setKey()">Set Key</button>
+					</span>
+				</div>
+			</p></div>
+			<div class="span9"><p>Last sent: <b id="lastSent"></b></p></div>
+			<div class="span9"><p>Next send: <b id="nextSend"></b></p></div>
+			<div class="span9"><p>Last Result: <b id="lastResult"></b></p></div>
+		</div>
+	</body>
+</html>
